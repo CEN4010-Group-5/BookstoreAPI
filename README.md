@@ -2,6 +2,23 @@
 
 This API will be used as part of the backend for a bookstore website.
 
+# Setup environment
+
+    pip3 install pipenv # Only the first time
+    pipenv install --dev # Only the first time
+    pipenv shell
+
+# How to clear the database
+
+    remove the db.sqlite file
+    python3 -c 'from BookstoreAPI import db; db.create_all()'
+
+# Launch server
+
+    python3 BookstoreAPI.py
+
+Sending POST and GET requests can be done using the script /utils/APIcalls.py
+
 ## Objectives
 
 | Feature ID |          Feature           | Benefit                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Implemented |
