@@ -4,11 +4,15 @@ This API will be used as part of the backend for a bookstore website.
 
 # Setup environment
 
+Make sure you have a [python3](https://www.python.org/) version installed and added to your PATH
+
     pip3 install pipenv # Only the first time
     pipenv install --dev # Only the first time
     pipenv shell
 
-# How to clear the database
+# How to clear/refactor the database
+
+This will be need to be done if there are any changes in the class schema
 
     remove the db.sqlite file
     python3 -c 'from BookstoreAPI import db; db.create_all()'
@@ -19,7 +23,10 @@ This API will be used as part of the backend for a bookstore website.
 
 # Sending POST and GET requests
 
-    Use the script [APIcalls.py](https://github.com/lustered/BookstoreAPI/blob/master/utils/APIcalls.py) in [utils/](utils)
+Use the script [APIcalls.py](https://github.com/lustered/BookstoreAPI/blob/master/utils/APIcalls.py) in [utils/](https://github.com/lustered/BookstoreAPI/tree/master/utils)
+
+Or alternatively you can use [Postman](https://www.postman.com/) for a more visual approach.
+You can refer to this [YouTube video](https://www.youtube.com/watch?v=PTZiDnuC86g) for a guide
 
 ## Objectives
 
