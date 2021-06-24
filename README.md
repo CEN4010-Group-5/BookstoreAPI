@@ -17,7 +17,9 @@ This API will be used as part of the backend for a bookstore website.
 
     python3 BookstoreAPI.py
 
-Sending POST and GET requests can be done using the script /utils/APIcalls.py
+# Sending POST and GET requests
+
+    Use the script [APIcalls.py](https://github.com/lustered/BookstoreAPI/blob/master/utils/APIcalls.py) in [utils/](utils)
 
 ## Objectives
 
