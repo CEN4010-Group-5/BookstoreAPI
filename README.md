@@ -15,7 +15,7 @@ Make sure you have a [python3](https://www.python.org/) version installed and ad
 This will be need to be done if there are any changes in the class schema
 
     remove the db.sqlite file
-    python3 -c 'from BookstoreAPI import db; db.create_all()'
+    Launch the server normally and the tables will be created
 
 # Launch server
 
