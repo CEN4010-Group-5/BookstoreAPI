@@ -62,3 +62,15 @@ if __name__ == "__main__":
 
     # Print pretty json Books
     print(json.dumps(getAllBooks(), indent=4))
+
+    # Get an array of dicts of every book in the database
+    booksjson = [json.loads(json.dumps(getAllBooks()[x])) for x in range(5)]
+
+    # Print all of them
+    print("All the books:\n", booksjson)
+
+    # To access each, index them
+    print("\nThe first book:\n", booksjson[0])
+
+    # To get their values
+    print("\nThe first book's author: ", booksjson[0].get("Author"))
