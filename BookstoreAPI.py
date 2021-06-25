@@ -25,7 +25,6 @@ ma = Marshmallow(app)
 We are going to keep classes in separate files. This way it will be easier to
 maintain and integrate new features. Please be sure to name classes uniquely.
 """
-from components.BookDetails import *  # noqa:402
 import components.views  # noqa:402
 
 
