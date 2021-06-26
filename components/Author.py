@@ -15,8 +15,8 @@ class Author(db.Model):
             )
 
     # Create DB fields
-    FirstName = db.Column(db.Integer, unique=True, primary_key=True)
-    LastName = db.Column(db.Integer, unique=True, primary_key=True)
+    FirstName = db.Column(db.String(300), primary_key=True)
+    LastName = db.Column(db.String(300), primary_key=True)
     Biography = db.Column(db.String(1000))
     Publisher = db.Column(db.String(300))
 
