@@ -1,4 +1,3 @@
-from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from __main__ import db, ma, app
 
