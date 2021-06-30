@@ -3,7 +3,7 @@ import json
 from time import sleep
 
 
-def addBookRequest(name, desc, price, author, genre, pub, year, sold):
+def API_addBookRequest(name, desc, price, author, genre, pub, year, sold):
     """Send post request to url with a json"""
     # Name must be unique for every entry. If not, it might return error 500
 
@@ -30,19 +30,19 @@ def addBookRequest(name, desc, price, author, genre, pub, year, sold):
     print(DATA_R.json())
 
 
-def getAllBooks():
+def API_getAllBooks():
     """Returns a json with all the books in the DB"""
     url = "http://localhost:5050/admin/books"
     return requests.get(url).json()
 
 
-def getAllAuthors():
+def API_getAllAuthors():
     """Returns a json with all the authors in the DB"""
     url = "http://localhost:5050/authors"
     return requests.get(url).json()
 
 
-def getBookByISBN(ISBN):
+def API_getBookByISBN(ISBN):
     """Return a json of the book using a specific ISBN"""
 
     # Route
@@ -51,7 +51,7 @@ def getBookByISBN(ISBN):
     return requests.get(url).json()
 
 
-def createAuthor(FirstName, LastName, Biography, Publisher):
+def API_createAuthor(FirstName, LastName, Biography, Publisher):
     """Send post request to url with a json to create an author"""
     # Route
     url = "http://localhost:5050/admin/createAuthor"
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     # Add 5 books to the DB with different names
     for x in range(5):
-        addBookRequest(
+        API_addBookRequest(
             Booksdata["Name"] + str(x + 1),
             Booksdata["Description"],
             Booksdata["Price"],
@@ -106,25 +106,25 @@ if __name__ == "__main__":
         )
 
     # Print pretty json Books
-    print(json.dumps(getAllBooks(), indent=4))
+    print(json.dumps(API_getAllBooks(), indent=4))
 
     # Get an array of dicts of every book in the database
-    booksjson = [json.loads(json.dumps(getAllBooks()[x])) for x in range(5)]
+    books = [json.loads(json.dumps(API_getAllBooks()[x])) for x in range(5)]
 
     # Print all of them
-    print("All the books:\n", booksjson)
+    print("All the books:\n", books)
 
     # To access each, index them
-    print("\nThe first book:\n", booksjson[0])
+    print("\nThe first book:\n", books[0])
 
     # To get their values
-    print("\nThe first book's author: ", booksjson[0].get("Author"))
+    print("\nThe first book's author: ", books[0].get("Author"))
 
     # Get book by ISBN
-    print(getBookByISBN(1))
+    print(API_getBookByISBN(1))
 
     # Create author
-    createAuthor(
+    API_createAuthor(
         AuthorData["FirstName"],
         AuthorData["LastName"],
         AuthorData["Biography"],
@@ -132,4 +132,4 @@ if __name__ == "__main__":
     )
 
     # Print all authors
-    print(json.dumps(getAllAuthors(), indent=4))
+    print(json.dumps(API_getAllAuthors(), indent=4))
