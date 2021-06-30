@@ -106,4 +106,27 @@ def getBookByISBN(ISBN):
     return Book.product_schema.jsonify(book)
 
 
-# ******************** [4]Book Details ********************
+@app.route("/books/author/<AUTHOR>", methods=["GET"])
+def getBooksByAuthor(AUTHOR):
+    """Retrieve a list of books associated with an author"""
+    # Get all books
+    all_books = Book.query.all()
+
+    # Append the book's name if its author was specified on the URL
+    byAuthor = [book.Name for book in all_books if book.Author == AUTHOR]
+
+    # Check that the author has books in the database. If no books are found
+    # by the author, return a json message saying so, and suggest authors.
+    all_authors = Author.products_schema.dump(Author.query.all())
+    if len(byAuthor) == 0:
+        return jsonify(
+            "No books written by this author in the database.",
+            "Here is a list of authors recorded: ",
+            all_authors,
+        )
+
+    # Returns all the DB items as json
+    return jsonify(byAuthor)
+
+
+# ******************** [4] Book Details ********************
