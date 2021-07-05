@@ -1,5 +1,9 @@
 # FIU CEN4010 group project - Bookstore API
 
+# DEVELOPMENT BRANCH
+
+Keep this branch updated before submitting a Pull Request.
+
 This API will be used as part of the backend for a bookstore website.
 
 # Setup environment
