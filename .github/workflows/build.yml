@@ -15,7 +15,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  on: [push, pull_request]
   name: Python Linting
   jobs:
     PythonLinting:
