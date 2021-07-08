@@ -15,12 +15,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  name: Python Linting
-  jobs:
-    PythonLinting:
-      name: Python linting
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@master
-        - name: Python linting
-          uses: konstruktoid/action-pylint@master
+  PythonLinting:
+    name: Python linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Python linting
+        uses: konstruktoid/action-pylint@master
