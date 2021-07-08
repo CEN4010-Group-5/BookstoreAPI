@@ -32,7 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 black pipenv
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f Pipfile ]; then pipenv install --dev; fi
+          if [ -f Pipfile ]; then pipenv lock --pre --clear; fi
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
