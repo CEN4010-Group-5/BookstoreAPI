@@ -42,4 +42,6 @@ jobs:
       - name: Format with black
         run: black .
       - name: Test client launches
-        run: python BookstoreAPI.py
+        run: |
+          pipenv shell
+          python BookstoreAPI.py
