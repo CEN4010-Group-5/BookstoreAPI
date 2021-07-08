@@ -43,4 +43,4 @@ jobs:
         run: black .
       - name: Test client launches
         # Assume it takes up to 5 seconds to start the client
-        run: timeout 5 python BookstoreAPI.py
+        run: timeout --preserve-status 5 python3 BookstoreAPI.py
