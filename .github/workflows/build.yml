@@ -42,4 +42,5 @@ jobs:
       - name: Format with black
         run: black .
       - name: Test client launches
-        run: python BookstoreAPI.py
+        # Assume it takes up to 5 seconds to start the client
+        run: timeout 5 python BookstoreAPI.py
