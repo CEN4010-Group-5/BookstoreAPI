@@ -1,6 +1,6 @@
 # FIU CEN4010 group project - Bookstore API
 
-# DEVELOPMENT BRANCH
+# DEVELOPMENT BRANCH - Shopping Cart
 
 Keep this branch updated before submitting a Pull Request.
 
