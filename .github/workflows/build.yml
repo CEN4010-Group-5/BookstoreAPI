@@ -1,0 +1,27 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - development
+
+  pull_request:
+    branches:
+      - master
+      - development
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  on: [push, pull_request]
+  name: Python Linting
+  jobs:
+    PythonLinting:
+      name: Python linting
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@master
+        - name: Python linting
+          uses: konstruktoid/action-pylint@master
