@@ -7,14 +7,7 @@ class Profile(db.Model):
     # Schema
     class ProductSchema(ma.Schema):
         class Meta:
-            fields = (
-                "id",
-                "UserName",
-                "Password",
-                "Name",
-                "HomeAddress",
-                "CreditCards",
-            )
+            fields = ("id", "UserName", "Password", "Name", "HomeAddress")
 
     # Create DB fields
     id = db.Column(db.Integer, primary_key=True)
@@ -38,18 +31,19 @@ class Profile(db.Model):
 class CreditCards(db.Model):
     class ProductSchema(ma.Schema):
         class Meta:
-            fields = ("cardNumber", "expirationDate", "cvs", "ownerId")
+            fields = ("cardId", "cardNumber", "expirationDate", "cvs", "ownerId")
 
-    cardNumber = db.Column(db.String(300), primary_key=True)
+    cardId = db.Column(db.Integer, primary_key=True)
+    cardNumber = db.Column(db.String(300), unique=True)
     expirationDate = db.Column(db.String(10))
     cvs = db.Column(db.String(5))
     ownerId = db.Column(db.String(300), db.ForeignKey("profile.UserName"))
+
+    # Product schema for single and multiple items
+    product_schema = ProductSchema()
+    products_schema = ProductSchema(many=True)
 
     def __init__(self, cardNumber, expirationDate, cvs):
         self.cardNumber = cardNumber
         self.expirationDate = expirationDate
         self.cvs = cvs
-
-    # Product schema for single and multiple items
-    product_schema = ProductSchema()
-    products_schema = ProductSchema(many=True)
