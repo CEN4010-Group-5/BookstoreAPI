@@ -3,6 +3,7 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 from components.Profile import Profile
+from components.Profile import CreditCards
 from __main__ import db, app
 
 """
@@ -188,6 +189,24 @@ def updateUser(userName):
 
     # Update user fields
     return user.product_schema.jsonify(user)
+
+
+@app.route("/profile/<userName>/creditcards", methods=["POST"])
+def addCards(userName):
+    """Add credit cards by user"""
+    someOwner = Profile.query.filter_by(UserName=userName).first()
+
+    cardNumber = request.json["cardNumber"]
+    expirationDate = request.json["expirationDate"]
+    cvs = request.json["cvs"]
+
+    newCard = CreditCards(cardNumber, expirationDate, cvs)
+    newCard.ownerId = someOwner.id
+
+    db.session.add(newCard)
+    db.session.commit()
+
+    return newCard.product_schema.jsonify(newCard)
 
 
 # ******************** [2] Profile Management ********************
