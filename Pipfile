@@ -8,6 +8,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 requests = "*"
+flask-marshmallow = "*"
 
 [dev-packages]
 pylint = "*"
