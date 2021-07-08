@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
+from components.Profile import Profile
 from __main__ import db, app
 
 """
@@ -130,3 +131,63 @@ def getBooksByAuthor(AUTHOR):
 
 
 # ******************** [4] Book Details ********************
+
+# ******************** [2] Profile Management ********************
+@app.route("/profile/createUser", methods=["POST"])
+def addUser():
+    """Handles creating a user profile in the databse"""
+    # Fetch the POST request's fields
+    UserName = request.json["UserName"]
+    Password = request.json["Password"]
+    Name = request.json["Name"]
+    HomeAddress = request.json["HomeAddress"]
+
+    # Check if the username already exists in the DB
+    duplicate = db.session.query(exists().where(Profile.UserName == UserName)).scalar()
+
+    if duplicate:
+        return jsonify("Username already in use")
+
+    # Create new user with fetched fields
+    new_user = Profile(UserName, Password, Name, HomeAddress)
+
+    # Only add user if it's unique
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Return new_user as json
+    return new_user.product_schema.jsonify(new_user)
+
+
+@app.route("/profile/<userName>", methods=["GET"])
+def getUserByUsername(userName):
+    """Returns the searched user requested using the username"""
+    user = Profile.query.filter_by(UserName=userName).first()
+
+    if user is None:
+        return jsonify(None)
+
+    return Profile.product_schema.jsonify(user)
+
+
+@app.route("/profile/<userName>", methods=["PUT"])
+def updateUser(userName):
+    """Update a user's information"""
+    user = Profile.query.filter_by(UserName=userName).first()
+    # Fetch the PUT request's fields
+
+    Password = request.json["Password"]
+    Name = request.json["Name"]
+    HomeAddress = request.json["HomeAddress"]
+
+    user.Password = Password
+    user.Name = Name
+    user.HomeAddress = HomeAddress
+
+    db.session.commit()
+
+    # Update user fields
+    return user.product_schema.jsonify(user)
+
+
+# ******************** [2] Profile Management ********************
