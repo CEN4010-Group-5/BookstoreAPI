@@ -4,7 +4,7 @@ This API will be used as part of the backend for a bookstore website.
 
 # Setup environment
 
-Make sure you have a [python3](https://www.python.org/) version installed and added to your PATH
+Make sure you have a [python3](https://www.python.org/ftp/python/3.6.6/python-3.6.6-amd64.exe) version installed and added to your PATH
 
     pip3 install pipenv # Only the first time
     pipenv install --dev # Only the first time
