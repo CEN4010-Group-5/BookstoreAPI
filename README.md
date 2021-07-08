@@ -27,7 +27,7 @@ If you are using vscode/pycharm, look up a video on how to use git with those.
 ### Install dependencies/requirements
 
     pip3 install pipenv # Only the first time
-    pipenv install --dev # Only the first time
+    pipenv lock --pre --clear
     pipenv shell
 
 # How to clear/refactor the database
