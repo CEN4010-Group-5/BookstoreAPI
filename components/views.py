@@ -210,3 +210,57 @@ def addCards(userName):
 
 
 # ******************** [2] Profile Management ********************
+
+
+# ******************** [1] Book Browsing & Sorting *******************
+@app.route("/books/genre/<GENRE>", methods=["GET"])
+def getBooksByGenre(GENRE):
+    """Handles getting books by genre from the database"""
+
+    # Get books by genre from db
+    books = Book.query.filter(Book.Genre == GENRE)
+
+    # Return books by genre as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
+
+
+@app.route("/books/topSellers", methods=["GET"])
+def getBooksByTopSellers():
+    """Handles getting books by top sellers from the database"""
+
+    # Get books by top sellers from db
+    books = Book.query.order_by(Book.Sold.desc()).limit(10)
+
+    # Return books by top sellers as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
+
+
+# ******* Relies on rating system to be implemented *****
+# @app.route("/books/rating/<RATING>", methods=["GET"])
+# def getBooksByRating(RATING):
+#     """Handles getting books by a rating or higher from the database"""
+
+#     # Get books by a specific rating or higher from db
+#     books = Book.query.filter(Book.Rating >= RATING)
+
+#     # Return books by a specific rating or higher as json
+#     results = Book.products_schema.dump(books)
+#     return jsonify(results)
+
+
+@app.route("/books/limit/<LIMIT>", methods=["GET"])
+def getBooksByLimit(LIMIT):
+    """Returns a json with X books where X is an int in the database"""
+
+    # Query
+    all_books = Book.query.order_by(Book.Name.asc()).limit(LIMIT)
+
+    result = Book.products_schema.dump(all_books)
+
+    # Returns X books in the DB as json
+    return jsonify(result)
+
+
+# ******************** [1] Book Browsing & Sorting *******************
