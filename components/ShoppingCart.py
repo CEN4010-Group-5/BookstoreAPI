@@ -1,7 +1,6 @@
 from __main__ import db, ma, app
 
 
-# Template class: [4] Book Details
 class ShoppingCart(db.Model):
     # Schema
     class ProductSchema(ma.Schema):
@@ -22,5 +21,4 @@ class ShoppingCart(db.Model):
     def __init__(self, User, Books):
         self.User = User
         self.Books = Books
-    def addBookToShoppingCart(book):
 

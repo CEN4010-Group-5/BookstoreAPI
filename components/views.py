@@ -154,3 +154,9 @@ def createShoppingCart():
 
     # Return new_shoppingcart as json
     return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
+
+@app.route("/admin/ShoppingCart/id", methods=["PUT"])
+def addBookToShoppingCart(book):
+
+
+
