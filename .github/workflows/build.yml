@@ -44,8 +44,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Format with black
-        # run: black .
-      - uses: wearerequired/lint-action@v1
+        uses: wearerequired/lint-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           black: true
