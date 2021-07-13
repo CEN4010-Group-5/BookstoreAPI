@@ -130,3 +130,78 @@ def getBooksByAuthor(AUTHOR):
 
 
 # ******************** [4] Book Details ********************
+# Create a Product
+
+@app.route('/rating/<book>',methods=['POST'])
+def add_rating(book):
+    book = request.json['book']
+    name = request.json['name']
+    rate = request.json['rate']
+    comment = request.json['comment']
+
+    new_rating = Rating(book, name, rate, comment)
+
+    db.session.add(new_rating)
+    db.session.comit()
+
+    return new_rating.product_schema.jsonify(new_rating)
+
+# Get All product
+@app.route('/product/',methods=['GET'])
+def  get_product():
+    all_product = Product.query.all()
+    result = products_schema.dump(all_products)
+    return jsonify(result.data)
+
+# write a rate to Product
+@app.route('/product/<rate>',methods=['PUT'])
+def rate_product(rate):
+
+
+    id = request.json['id']
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    qty = request.json['qty']
+
+    product.id = id
+    product.name = name
+    product.description = description
+    product.price =price
+    product.qty =qty
+
+    product = Product.query.get(rate)
+
+    db.session.comit()
+
+    return product_schema.jsonify(product)
+
+# write a rate to Product
+
+@app.route('/product/<rate>',methods=['PUT'])
+def rate_product(rate):
+
+
+    id = request.json['id']
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    qty = request.json['qty']
+
+
+
+    product.id = id
+    product.name = name
+    product.description = description
+    product.price =price
+    product.qty =qty
+    product = Product.query.get(rate)
+
+    db.session.comit()
+
+    return product_schema.jsonify(product)
+
+@app.route('/product/<id>',menthods =['DELETE'])
+def delete_product(id):
+    product = Product.query.get(id)
+    return product_schema.jsonify(product)
