@@ -220,9 +220,10 @@ def getBooksByGenre(GENRE):
     # Get books by genre from db
     books = Book.query.filter(Book.Genre == GENRE)
 
-    # Return books by genre as json 
+    # Return books by genre as json
     results = Book.products_schema.dump(books)
     return jsonify(results)
+
 
 @app.route("/books/topSellers", methods=["GET"])
 def getBooksByTopSellers():
@@ -231,9 +232,10 @@ def getBooksByTopSellers():
     # Get books by top sellers from db
     books = Book.query.order_by(Book.Sold.desc()).limit(10)
 
-    # Return books by top sellers as json 
+    # Return books by top sellers as json
     results = Book.products_schema.dump(books)
     return jsonify(results)
+
 
 # ******* Relies on rating system to be implemented *****
 # @app.route("/books/rating/<RATING>", methods=["GET"])
@@ -243,9 +245,10 @@ def getBooksByTopSellers():
 #     # Get books by a specific rating or higher from db
 #     books = Book.query.filter(Book.Rating >= RATING)
 
-#     # Return books by a specific rating or higher as json 
+#     # Return books by a specific rating or higher as json
 #     results = Book.products_schema.dump(books)
 #     return jsonify(results)
+
 
 @app.route("/books/limit/<LIMIT>", methods=["GET"])
 def getBooksByLimit(LIMIT):
@@ -259,3 +262,5 @@ def getBooksByLimit(LIMIT):
     # Returns X books in the DB as json
     return jsonify(result)
 
+
+# ******************** [1] Book Browsing & Sorting *******************
