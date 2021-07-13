@@ -130,7 +130,7 @@ def getBooksByAuthor(AUTHOR):
     return jsonify(byAuthor)
 
 
-# ******************** [4] Book Details ********************
+# ******************** [6] Shopping Cart ********************
 @app.route("/admin/ShoppingCart", methods=["POST"])
 def createShoppingCart():
     """Handles adding a shopping cart to the database"""
