@@ -3,7 +3,7 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 <<<<<<< HEAD
-from components.Wishlist import wishList
+from components.Wishlist import Wishlist
 =======
 from components.Profile import Profile
 from components.Profile import CreditCards
