@@ -1,7 +1,7 @@
 from __main__ import db, ma, app
 
 
-class wishList(db.Model):
+class Wishlist(db.Model):
     # Schema
     class ProductSchema(ma.Schema):
         class Meta:
