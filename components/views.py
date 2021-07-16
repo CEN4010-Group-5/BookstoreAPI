@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
-from components.Wishlist import wishList
+from components.Wishlist import Wishlist
 from __main__ import db, app
 
 """
