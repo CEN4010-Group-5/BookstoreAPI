@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
+from components.Wishlist import Wishlist
 from components.Profile import Profile
 from components.Profile import CreditCards
 from __main__ import db, app
@@ -264,3 +265,62 @@ def getBooksByLimit(LIMIT):
 
 
 # ******************** [1] Book Browsing & Sorting *******************
+
+# ******************** [4] Wishlist ************************
+@app.route("/wishList/createWishList", methods=["POST"])
+def addWishlist():
+    # Fetch the POST request's fields
+    Title = request.json["Title"]
+
+    # Check if the wishlist title already exists
+    duplicate = db.session.query(exists().where(Wishlist.Title == Title)).scalar()
+
+    if duplicate:
+        return jsonify("Wishlist tile already in use.")
+
+    new_Wish = Wishlist(Title)
+
+    db.session.add(new_Wish)
+    db.session.commit()
+
+    return new_Wish.product_schema.jsonify(new_Wish)
+
+
+@app.route("/wishList/<title>", methods=["POST"])
+def addBook(title):
+    """Handles adding a book to the wishlist."""
+    # Fetch the POST request's fields
+    Name = request.json["Name"]
+    Description = request.json["Description"]
+    Price = request.json["Price"]
+    Author = request.json["Author"]
+    Genre = request.json["Genre"]
+    Pub = request.json["Publisher"]
+    Year = request.json["YearPublished"]
+    Sold = request.json["Sold"]
+
+    someList = Wishlist.query.filter_by(Title=title).first()
+
+    # Create new book with fetched fields
+    new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
+    new_book.ownerId = someList.id
+    # Only add book if it's unique
+    db.session.add(new_book)
+    db.session.commit()
+
+    # Return new_book as json
+    return new_book.product_schema.jsonify(new_book)
+
+
+@app.route("/wishList/<title>", methods=["GET"])
+def getBookInList(title):
+    """Returns the books requested from a wishlist."""
+    wish = Wishlist.query.filter_by(Title=title).first()
+
+    if wish is None:
+        return jsonify(None)
+
+    return Wishlist.product_schema.jsonify(wish)
+
+
+# ******************** [4] Wishlist ************************
