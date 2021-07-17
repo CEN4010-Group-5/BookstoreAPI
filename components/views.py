@@ -163,6 +163,12 @@ def addBookToShoppingCart(book):
 
     if duplicate:
         return jsonify("Book is already in shopping cart")
+    else:
+        shopping_cart = ShoppingCart(self.User, book)
+        db.session.add(shopping_cart)
+        db.session.commit()
+
+
 
 
 
