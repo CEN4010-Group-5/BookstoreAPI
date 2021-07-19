@@ -1,7 +1,10 @@
+import re
 from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
+from components.Profile import Profile
+from components.Profile import CreditCards
 from __main__ import db, app
 
 """
@@ -106,42 +109,25 @@ def getBookByISBN(ISBN):
     return Book.product_schema.jsonify(book)
 
 
-@app.route("/books/author/<AUTHOR>", methods=["GET"])
-def getBooksByAuthor(AUTHOR):
-    """Retrieve a list of books associated with an author"""
-    # Get all books
-    all_books = Book.query.all()
-
-    # Append the book's name if its author was specified on the URL
-    byAuthor = [book.Name for book in all_books if book.Author == AUTHOR]
-
-    # Check that the author has books in the database. If no books are found
-    # by the author, return a json message saying so, and suggest authors.
-    all_authors = Author.products_schema.dump(Author.query.all())
-    if len(byAuthor) == 0:
-        return jsonify(
-            "No books written by this author in the database.",
-            "Here is a list of authors recorded: ",
-            all_authors,
-        )
-
-    # Returns all the DB items as json
-    return jsonify(byAuthor)
-
-
-# ******************** [4] Book Details ********************
-
-
+# ******************** [4]Book Details ********************
 
 # ******************** [2] Profile Management ********************
 @app.route("/profile/createUser", methods=["POST"])
 def addUser():
     """Handles creating a user profile in the databse"""
+
+    # pattern used from username(email) input
+    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+
     # Fetch the POST request's fields
     UserName = request.json["UserName"]
     Password = request.json["Password"]
     Name = request.json["Name"]
     HomeAddress = request.json["HomeAddress"]
+
+    # check if username is valid
+    if (re.search(regex, UserName)) == None:
+        return jsonify("Invalid username")
 
     # Check if the username already exists in the DB
     duplicate = db.session.query(exists().where(Profile.UserName == UserName)).scalar()
@@ -163,7 +149,8 @@ def addUser():
 def getUserByUsername(userName):
     """Returns the searched user requested using the username"""
     user = Profile.query.filter_by(UserName = userName).first()
-
+    
+    # check if user exists
     if user is None:
         return jsonify(None)
 
@@ -172,8 +159,12 @@ def getUserByUsername(userName):
 @app.route("/profile/<userName>", methods=["PUT"])
 def updateUser(userName):
     user = Profile.query.filter_by(UserName = userName).first()
-    # Fetch the PUT request's fields
     
+    # check if user exists
+    if user is None:
+        return jsonify(None)
+    
+    # Fetch the PUT request's fields
     Password = request.json["Password"]
     Name = request.json["Name"]
     HomeAddress = request.json["HomeAddress"]
@@ -186,3 +177,19 @@ def updateUser(userName):
 
     # Update user fields
     return user.product_schema.jsonify(user)
+
+@app.route("/profile/<userName>/creditcards", methods=["POST"])
+def addCards(userName):
+    someOwner = Profile.query.filter_by(UserName = userName).first()
+
+    cardNumber = request.json["cardNumber"]
+    expirationDate = request.json["expirationDate"]
+    cvs = request.json["cvs"]
+   
+    newCard = CreditCards(cardNumber, expirationDate, cvs)
+    newCard.ownerId = someOwner.id
+
+    db.session.add(newCard)
+    db.session.commit()
+
+    return newCard.product_schema.jsonify(newCard)
