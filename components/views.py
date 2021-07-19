@@ -29,6 +29,7 @@ def addBook():
     Pub = request.json["Publisher"]
     Year = request.json["YearPublished"]
     Sold = request.json["Sold"]
+    Rating = request.json["Rating"]
 
     # Check if the book exists in the DB
     duplicate = db.session.query(exists().where(Book.Name == Name)).scalar()
@@ -37,7 +38,9 @@ def addBook():
         return jsonify("Book name is already in the database")
 
     # Create new book with fetched fields
-    new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
+    new_book = Book(
+        Name, Description, Price, Author, Genre, Pub, Year, Sold, Rating
+    )  # noqa
 
     # Only add book if it's unique
     db.session.add(new_book)
@@ -80,7 +83,7 @@ def createAuthor():
     Biography = request.json["Biography"]
     Publisher = request.json["Publisher"]
 
-    # Check if the book exists in the DB
+    # Check if the author exists in the DB
     dupFName = db.session.query(exists().where(Author.FirstName == FName)).scalar()
     dupLName = db.session.query(exists().where(Author.LastName == LName)).scalar()
 
@@ -116,7 +119,11 @@ def getBooksByAuthor(AUTHOR):
     all_books = Book.query.all()
 
     # Append the book's name if its author was specified on the URL
-    byAuthor = [book.Name for book in all_books if book.Author == AUTHOR]
+    byAuthor = [
+        book.Name
+        for book in all_books
+        if book.Author.replace(" ", "") == AUTHOR  # noqa:
+    ]
 
     # Check that the author has books in the database. If no books are found
     # by the author, return a json message saying so, and suggest authors.
@@ -239,16 +246,16 @@ def getBooksByTopSellers():
 
 
 # ******* Relies on rating system to be implemented *****
-# @app.route("/books/rating/<RATING>", methods=["GET"])
-# def getBooksByRating(RATING):
-#     """Handles getting books by a rating or higher from the database"""
+@app.route("/books/rating/<RATING>", methods=["GET"])
+def getBooksByRating(RATING):
+    """Handles getting books by a rating or higher from the database"""
 
-#     # Get books by a specific rating or higher from db
-#     books = Book.query.filter(Book.Rating >= RATING)
+    # Get books by a specific rating or higher from db
+    books = Book.query.filter(Book.Rating >= RATING)
 
-#     # Return books by a specific rating or higher as json
-#     results = Book.products_schema.dump(books)
-#     return jsonify(results)
+    # Return books by a specific rating or higher as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
 
 
 @app.route("/books/limit/<LIMIT>", methods=["GET"])
