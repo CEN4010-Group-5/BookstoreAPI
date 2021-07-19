@@ -38,7 +38,9 @@ def addBook():
         return jsonify("Book name is already in the database")
 
     # Create new book with fetched fields
-    new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold, Rating)  # noqa
+    new_book = Book(
+        Name, Description, Price, Author, Genre, Pub, Year, Sold, Rating
+    )  # noqa
 
     # Only add book if it's unique
     db.session.add(new_book)
@@ -117,7 +119,11 @@ def getBooksByAuthor(AUTHOR):
     all_books = Book.query.all()
 
     # Append the book's name if its author was specified on the URL
-    byAuthor = [book.Name for book in all_books if book.Author == AUTHOR]
+    byAuthor = [
+        book.Name
+        for book in all_books
+        if book.Author.replace(" ", "") == AUTHOR  # noqa:
+    ]
 
     # Check that the author has books in the database. If no books are found
     # by the author, return a json message saying so, and suggest authors.
