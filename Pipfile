@@ -8,6 +8,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 requests = "*"
+flask-marshmallow = "*"
 
 [dev-packages]
 pylint = "*"
@@ -15,4 +16,4 @@ black = "*"
 pep8 = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3"

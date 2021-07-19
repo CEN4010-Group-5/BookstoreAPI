@@ -26,9 +26,15 @@ If you are using vscode/pycharm, look up a video on how to use git with those.
 
 ### Install dependencies/requirements
 
+If you want to have a specific environment run:
+
     pip3 install pipenv # Only the first time
-    pipenv install --dev # Only the first time
+    pipenv lock --pre --clear
     pipenv shell
+
+If you want to install all the packages system-wide:
+
+    pip3 install -r requirements.txt
 
 # How to clear/refactor the database
 

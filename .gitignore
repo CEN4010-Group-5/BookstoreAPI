@@ -1,2 +1,4 @@
 .vim
 __pycache__/
+Pipfile.lock
+.idea
