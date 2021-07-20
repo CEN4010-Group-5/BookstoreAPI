@@ -148,7 +148,7 @@ def addUser():
     """Handles creating a user profile in the databse"""
 
     # pattern used from username(email) input
-    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
 
     # Fetch the POST request's fields
     UserName = request.json["UserName"]
@@ -176,30 +176,32 @@ def addUser():
     # Return new_user as json
     return new_user.product_schema.jsonify(new_user)
 
+
 @app.route("/profile/<userName>", methods=["GET"])
 def getUserByUsername(userName):
     """Returns the searched user requested using the username"""
-    user = Profile.query.filter_by(UserName = userName).first()
-    
+    user = Profile.query.filter_by(UserName=userName).first()
+
     # check if user exists
     if user is None:
         return jsonify(None)
 
     return Profile.product_schema.jsonify(user)
 
+
 @app.route("/profile/<userName>", methods=["PUT"])
 def updateUser(userName):
-    user = Profile.query.filter_by(UserName = userName).first()
-    
+    user = Profile.query.filter_by(UserName=userName).first()
+
     # check if user exists
     if user is None:
         return jsonify(None)
-    
+
     # Fetch the PUT request's fields
     Password = request.json["Password"]
     Name = request.json["Name"]
     HomeAddress = request.json["HomeAddress"]
-    
+
     user.Password = Password
     user.Name = Name
     user.HomeAddress = HomeAddress
@@ -209,20 +211,23 @@ def updateUser(userName):
     # Update user fields
     return user.product_schema.jsonify(user)
 
+
 @app.route("/profile/<userName>/creditcards", methods=["POST"])
 def addCards(userName):
-    someOwner = Profile.query.filter_by(UserName = userName).first()
+    someOwner = Profile.query.filter_by(UserName=userName).first()
 
     cardNumber = request.json["cardNumber"]
     expirationDate = request.json["expirationDate"]
     cvs = request.json["cvs"]
 
-    duplicate = db.session.query(exists().where(CreditCards.cardNumber == cardNumber)).scalar()
+    duplicate = db.session.query(
+        exists().where(CreditCards.cardNumber == cardNumber)
+    ).scalar()
 
     # check to see if card already in database
     if duplicate:
         return jsonify("card already in use")
-   
+
     newCard = CreditCards(cardNumber, expirationDate, cvs)
     newCard.ownerId = someOwner.id
 
@@ -230,6 +235,7 @@ def addCards(userName):
     db.session.commit()
 
     return newCard.product_schema.jsonify(newCard)
+
 
 # ******************** [2] Profile Management ********************
 
