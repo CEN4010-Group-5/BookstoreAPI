@@ -214,20 +214,23 @@ def updateUser(userName):
 
 @app.route("/profile/<userName>/creditcards", methods=["POST"])
 def addCards(userName):
-    someOwner = Profile.query.filter_by(UserName=userName).first()
+    someOwner = Profile.query.filter_by(UserName = userName).first()
+
+    # check if user exists
+    if someOwner is None:
+        return jsonify(None)
 
     cardNumber = request.json["cardNumber"]
     expirationDate = request.json["expirationDate"]
     cvs = request.json["cvs"]
 
-    duplicate = db.session.query(
-        exists().where(CreditCards.cardNumber == cardNumber)
-    ).scalar()
+    duplicate = db.session.query(exists().where(CreditCards.cardNumber == cardNumber)).scalar()
 
     # check to see if card already in database
     if duplicate:
         return jsonify("card already in use")
 
+   
     newCard = CreditCards(cardNumber, expirationDate, cvs)
     newCard.ownerId = someOwner.id
 
