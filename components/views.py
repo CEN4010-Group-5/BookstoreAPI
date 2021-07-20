@@ -1,3 +1,4 @@
+import re
 from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
@@ -145,11 +146,19 @@ def getBooksByAuthor(AUTHOR):
 @app.route("/profile/createUser", methods=["POST"])
 def addUser():
     """Handles creating a user profile in the databse"""
+
+    # pattern used from username(email) input
+    regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
+
     # Fetch the POST request's fields
     UserName = request.json["UserName"]
     Password = request.json["Password"]
     Name = request.json["Name"]
     HomeAddress = request.json["HomeAddress"]
+
+    # check if username is valid
+    if (re.search(regex, UserName)) == None:
+        return jsonify("Invalid username")
 
     # Check if the username already exists in the DB
     duplicate = db.session.query(exists().where(Profile.UserName == UserName)).scalar()
@@ -173,6 +182,7 @@ def getUserByUsername(userName):
     """Returns the searched user requested using the username"""
     user = Profile.query.filter_by(UserName=userName).first()
 
+    # check if user exists
     if user is None:
         return jsonify(None)
 
@@ -181,10 +191,13 @@ def getUserByUsername(userName):
 
 @app.route("/profile/<userName>", methods=["PUT"])
 def updateUser(userName):
-    """Update a user's information"""
     user = Profile.query.filter_by(UserName=userName).first()
-    # Fetch the PUT request's fields
 
+    # check if user exists
+    if user is None:
+        return jsonify(None)
+
+    # Fetch the PUT request's fields
     Password = request.json["Password"]
     Name = request.json["Name"]
     HomeAddress = request.json["HomeAddress"]
@@ -201,12 +214,23 @@ def updateUser(userName):
 
 @app.route("/profile/<userName>/creditcards", methods=["POST"])
 def addCards(userName):
-    """Add credit cards by user"""
     someOwner = Profile.query.filter_by(UserName=userName).first()
+
+    # check if user exists
+    if someOwner is None:
+        return jsonify(None)
 
     cardNumber = request.json["cardNumber"]
     expirationDate = request.json["expirationDate"]
     cvs = request.json["cvs"]
+
+    duplicate = db.session.query(
+        exists().where(CreditCards.cardNumber == cardNumber)
+    ).scalar()
+
+    # check to see if card already in database
+    if duplicate:
+        return jsonify("card already in use")
 
     newCard = CreditCards(cardNumber, expirationDate, cvs)
     newCard.ownerId = someOwner.id
