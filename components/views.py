@@ -352,12 +352,18 @@ def createShoppingCart():
     # Return new_shoppingcart as json
     return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
 
-@app.route("/admin/ShoppingCart/id", methods=["PUT"])
+@app.route("/admin/ShoppingCart/<User>", methods=["PUT"])
 def addBookToShoppingCart(book):
 
-    # check if book is already in shopping cart
     duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
 
     if duplicate:
-        return jsonify("Book is already in shopping cart")
+        return jsonify("Book already in shopping cart")
+    else:
+        shoppingCart = ShoppingCart(User, book)
+        db.session.add(shoppingCart)
+        db.commit()
+
+        return shoppingCart.product_schema.jsonify(shoppingCart)
+
 
