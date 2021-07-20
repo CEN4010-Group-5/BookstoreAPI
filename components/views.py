@@ -216,6 +216,12 @@ def addCards(userName):
     cardNumber = request.json["cardNumber"]
     expirationDate = request.json["expirationDate"]
     cvs = request.json["cvs"]
+
+    duplicate = db.session.query(exists().where(CreditCards.cardNumber == cardNumber)).scalar()
+
+    # check to see if card already in database
+    if duplicate:
+        return jsonify("card already in use")
    
     newCard = CreditCards(cardNumber, expirationDate, cvs)
     newCard.ownerId = someOwner.id
