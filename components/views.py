@@ -4,6 +4,7 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
+from components.Wishlist import WishBooks
 from components.Profile import Profile
 from components.Profile import CreditCards
 from __main__ import db, app
@@ -318,30 +319,27 @@ def addWishlist():
     return new_Wish.product_schema.jsonify(new_Wish)
 
 
-# @app.route("/wishList/<title>", methods=["POST"])
-# def addBook(title):
-# """Handles adding a book to the wishlist."""
-# # Fetch the POST request's fields
-# Name = request.json["Name"]
-# Description = request.json["Description"]
-# Price = request.json["Price"]
-# Author = request.json["Author"]
-# Genre = request.json["Genre"]
-# Pub = request.json["Publisher"]
-# Year = request.json["YearPublished"]
-# Sold = request.json["Sold"]
+@app.route("/wishList/<title>/wishbooks", methods=["POST"])
+def addWishBook(title):
+    """Handles adding a book to the wishlist."""
+    # Fetch the POST request's fields
+    someList = wishList.query.filter_by(Title=title).first()
 
-# someList = Wishlist.query.filter_by(Title=title).first()
+    if someList is None:
+        return jsonify(None)
 
-# # Create new book with fetched fields
-# new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
-# new_book.ownerId = someList.id
-# # Only add book if it's unique
-# db.session.add(new_book)
-# db.session.commit()
+    bookName = request,json["bookName"]
 
-# # Return new_book as json
-# return new_book.product_schema.jsonify(new_book)
+   
+    # Create new book with fetched fields
+    new_wishbook = wishBooks(bookName)
+    new_wishbook.ownerId = someList.id
+    # Only add book if it's unique
+    db.session.add(new_wishbook)
+    db.session.commit()
+
+    # Return new_book as json
+    return new_wishbook.product_schema.jsonify(new_wishbook)    
 
 
 @app.route("/wishList/<title>", methods=["GET"])
@@ -353,6 +351,19 @@ def getBookInList(title):
         return jsonify(None)
 
     return Wishlist.product_schema.jsonify(wish)
+
+@app.route("/wishList/<title>", methods=["DELETE"])
+def removeBookInList(title):
+    
+    bookName = request,json["bookName"] 
+    list = wishList.query.filter_by(Title=title).first()
+    
+    
+    list.bookName = bookName
+    db.session.delete(bookName)
+    db.session.commit()
+
+    return list.product_schema.jsonify(list)
 
 
 # ******************** [4] Wishlist ************************
