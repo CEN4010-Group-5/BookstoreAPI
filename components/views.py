@@ -4,7 +4,7 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
-from components.Wishlist import WishBooks
+from components.Wishlist import Wishbooks
 from components.Profile import Profile
 from components.Profile import CreditCards
 from __main__ import db, app
@@ -323,7 +323,7 @@ def addWishlist():
 def addWishBook(title):
     """Handles adding a book to the wishlist."""
     # Fetch the POST request's fields
-    someList = wishList.query.filter_by(Title=title).first()
+    someList = WishList.query.filter_by(Title=title).first()
 
     if someList is None:
         return jsonify(None)
