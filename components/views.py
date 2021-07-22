@@ -8,6 +8,7 @@ from components.Wishlist import Wishlist
 from components.Profile import Profile
 from components.Profile import CreditCards
 from components.ShoppingCart import ShoppingCart
+
 # from __main__ import db, app
 
 """
@@ -331,13 +332,13 @@ def getBookInList(title):
 
 # ******************** [6] Shopping Cart *******************
 
+
 @app.route("/admin/ShoppingCart", methods=["POST"])
 def createShoppingCart():
     """Handles adding a shopping cart to the database"""
     # Fetch the POST request's fields
     User = request.json["User"]
     Books = request.json["Books"]
-
 
     # Check if the shopping cart exists in the DB
     duplicate = db.session.query(exists().where(ShoppingCart.User == User)).scalar()
@@ -353,21 +354,22 @@ def createShoppingCart():
         db.session.commit()
 
         # Return new_shoppingcart as json
-       # return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
+    # return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
 
- # @app.route("/admin/ShoppingCart/<User>", methods=["PUT"])
- # def addBookToShoppingCart(book):
- #
- #    duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
- #
- #    if duplicate:
- #        return jsonify("Book already in shopping cart")
- #        shoppingCart = ShoppingCart(User, book)
- #        db.commit()
- #
- #        # return shoppingCart.product_schema.jsonify(shoppingCart)
+
+# @app.route("/admin/ShoppingCart/<User>", methods=["PUT"])
+# def addBookToShoppingCart(book):
+#
+#    duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
+#
+#    if duplicate:
+#        return jsonify("Book already in shopping cart")
+#        shoppingCart = ShoppingCart(User, book)
+#        db.commit()
+#
+#        # return shoppingCart.product_schema.jsonify(shoppingCart)
+
 
 @app.route("/")
 def test():
     print("Hello")
-
