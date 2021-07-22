@@ -21,3 +21,8 @@ class ShoppingCart(db.Model):
     def __init__(self, User, Books):
         self.User = User
         self.Books = Books
+
+
+
+
+
