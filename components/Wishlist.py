@@ -15,7 +15,7 @@ class wishList(db.Model):
     def __init__(self, Title):
         self.Title = Title
 
-class WishBooks(db.Model):
+class wishBooks(db.Model):
     """This class represents a book author"""
 
     # Schema
