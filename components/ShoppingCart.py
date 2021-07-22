@@ -1,32 +1,23 @@
-@app.route("/admin/ShoppingCart", methods=["POST"])
-def createShoppingCart():
-    """Handles adding a shopping cart to the database"""
-    # Fetch the POST request's fields
-    User = request.json["User"]
-    Books = request.json["Books"]
+from BookstoreAPI import db, ma
 
 
-    # Check if the shopping cart exists in the DB
-    duplicate = db.session.query(exists().where(ShoppingCart.User == User)).scalar()
+class ShoppingCart(db.Model):
+    # Schema
+    class ProductSchema(ma.Schema):
+        class Meta:
+            fields = (
+                "User",
+                "Books",
+            )
 
-    if duplicate:
-        return jsonify("Shopping cart is already in the database")
+    # Create DB fields
+    User = db.Column(db.String(300), primary_key=True)
+    Books = db.Column(db.String(300))
 
-    # Create new shopping cart with fetched fields
-    new_shoppingcart = ShoppingCart(User, Books)
+    # Product schema for single and multiple items
+    product_schema = ProductSchema()
+    products_schema = ProductSchema(many=True)
 
-    # Only add shopping cart if it's unique
-    db.session.add(new_shoppingcart)
-    db.session.commit()
-
-    # Return new_shoppingcart as json
-    return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
-
-@app.route("/admin/ShoppingCart/id", methods=["PUT"])
-def addBookToShoppingCart(book):
-
-    # check if book is already in shopping cart
-    duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
-
-    if duplicate:
-        return jsonify("Book is already in shopping cart")
+    def __init__(self, User, Books):
+        self.User = User
+        self.Books = Books

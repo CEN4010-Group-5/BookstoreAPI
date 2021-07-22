@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 from sqlalchemy import exists
+
+from BookstoreAPI import app, db
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
 from components.Profile import Profile
 from components.Profile import CreditCards
-from __main__ import db, app
+from components.ShoppingCart import ShoppingCart
+# from __main__ import db, app
 
 """
 This file will contain all the routes with their functions. Make sure to add a
@@ -341,27 +344,30 @@ def createShoppingCart():
 
     if duplicate:
         return jsonify("Shopping cart is already in the database")
+    else:
+        # Create new shopping cart with fetched fields
+        new_shoppingcart = ShoppingCart(User, Books)
 
-    # Create new shopping cart with fetched fields
-    new_shoppingcart = ShoppingCart(User, Books)
+        # Only add shopping cart if it's unique
+        db.session.add(new_shoppingcart)
+        db.session.commit()
 
-    # Only add shopping cart if it's unique
-    db.session.add(new_shoppingcart)
-    db.session.commit()
+        # Return new_shoppingcart as json
+       # return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
 
-    # Return new_shoppingcart as json
-    return new_shoppingcart.product_schema.jsonify(new_shoppingcart)
+ # @app.route("/admin/ShoppingCart/<User>", methods=["PUT"])
+ # def addBookToShoppingCart(book):
+ #
+ #    duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
+ #
+ #    if duplicate:
+ #        return jsonify("Book already in shopping cart")
+ #        shoppingCart = ShoppingCart(User, book)
+ #        db.commit()
+ #
+ #        # return shoppingCart.product_schema.jsonify(shoppingCart)
 
-#@app.route("/admin/ShoppingCart/<User>", methods=["PUT"])
-#def addBookToShoppingCart(book):
-
- #   duplicate = db.session.query(exists().where(ShoppingCart.Books == book)).scalar()
-
-  #  if duplicate:
-   #     return jsonify("Book already in shopping cart")
-    ##   shoppingCart = ShoppingCart(User, book)
-      ## db.commit()
-
-        #return shoppingCart.product_schema.jsonify(shoppingCart)
-
+@app.route("/")
+def test():
+    print("Hello")
 
