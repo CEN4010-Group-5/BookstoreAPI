@@ -356,7 +356,7 @@ def getBookInList(title):
 def removeBookInList(title):
     
     bookName = request,json["bookName"] 
-    list = wishList.query.filter_by(Title=title).first()
+    list = WishList.query.filter_by(Title=title).first()
     
     
     list.bookName = bookName
