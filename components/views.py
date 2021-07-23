@@ -17,52 +17,6 @@ It is easier to maintain and check for conflicts if all the routes are in a
 single file, make sure you are naming each function uniquely.
 """
 
-@app.route("/profile/createUser", methods=["POST"])
-def addUser():
-    """Handles creating a user profile in the databse"""
-
-    # pattern used from username(email) input
-    regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
-
-    # Fetch the POST request's fields
-    UserName = request.json["UserName"]
-    Password = request.json["Password"]
-    Name = request.json["Name"]
-    HomeAddress = request.json["HomeAddress"]
-
-    # check if username is valid
-    if (re.search(regex, UserName)) == None:
-        return jsonify("Invalid username")
-
-    # Check if the username already exists in the DB
-    duplicate = db.session.query(exists().where(Profile.UserName == UserName)).scalar()
-
-    if duplicate:
-        return jsonify("Username already in use")
-
-    # Create new user with fetched fields
-    new_user = Profile(UserName, Password, Name, HomeAddress)
-
-    # Only add user if it's unique
-    db.session.add(new_user)
-    db.session.commit()
-
-    # Return new_user as json
-    return new_user.product_schema.jsonify(new_user)
-
-@app.route("/profile/<userName>", methods=["GET"])
-def getUserByUsername(userName):
-    """Returns the searched user requested using the username"""
-    user = Profile.query.filter_by(UserName=userName).first()
-
-    # check if user exists
-    if user is None:
-        return jsonify(None)
-
-    return Profile.product_schema.jsonify(user)
-
-
-
 # ******************** [4] Book Details ********************
 @app.route("/admin/books", methods=["POST"])
 def addBook():
@@ -185,12 +139,9 @@ def getBooksByAuthor(AUTHOR):
 
 @app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["POST"])
 def createShoppingCart(userName, ISBN):
-
     """Handles adding a shopping cart to the database"""
     # Fetch the POST request's fields
-    Books = getBookByISBN(ISBN)
-    User = getUserByUsername(userName)
-    newshoppingcart = ShoppingCart(User, Books)
+    newshoppingcart = ShoppingCart(userName, ISBN)
 
     # Only add shopping cart if it's unique
     db.session.add(newshoppingcart)
@@ -204,11 +155,18 @@ def createShoppingCart(userName, ISBN):
 # @app.route("/admin/ShoppingCart/<book>", methods=["PUT"])
 # def addBookToShoppingCart(book):
 
-# @app.route("/admin/ShoppingCart/<book>", methods=["DELETE"])
-# def deleteBookFromShoppingCart(book):
+# @app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["DELETE"])
+# def deleteBookFromShoppingCart(userName, ISBN):
 
-# @app.route("/admin/ShoppingCart", methods=["GET"])
-# def getListFromShoppingCart():
+@app.route("/admin/ShoppingCart/<userName>", methods=["GET"])
+def getListFromShoppingCart(userName):
+    all_books = ShoppingCart.query.get(userName)
+
+    if all_books is None:
+        return jsonify(None)
+
+    return ShoppingCart.product_schema.jsonify(all_books)
+
 
 
 

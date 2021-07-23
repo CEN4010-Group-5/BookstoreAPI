@@ -1,4 +1,4 @@
-from BookstoreAPI import db, ma
+from __main__ import db, ma
 
 
 class ShoppingCart(db.Model):
