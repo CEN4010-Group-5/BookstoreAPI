@@ -12,7 +12,7 @@ class ShoppingCart(db.Model):
 
     # Create DB fields
     User = db.Column(db.String(300), primary_key=True)
-    Books = db.Column(db.String(300))
+    Books = db.Column(db.Integer())
 
     # Product schema for single and multiple items
     product_schema = ProductSchema()

@@ -304,36 +304,70 @@ def getBooksByLimit(LIMIT):
 
 # *********************[6] Shopping Cart *******************
 
-@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["POST"])
-def createShoppingCart(userName, ISBN):
+@app.route("/admin/ShoppingCart", methods=["POST"])
+def createShoppingCart():
     """Handles adding a shopping cart to the database"""
+    User = request.json["User"]
+    Books = request.json["Books"]
 
-    # Fetch the POST request's fields
-    newshoppingcart = ShoppingCart(userName, ISBN)
+    duplicate = db.session.query(exists().where(ShoppingCart.User == User)).scalar()
 
-    # Only add shopping cart if it's unique
-    db.session.add(newshoppingcart)
+    if duplicate:
+        return jsonify("Shopping Cart is already in the database.")
+
+        # Create new book with fetched fields
+    shopping_cart = ShoppingCart(User, Books)
+
+    # Only add book if it's unique
+    db.session.add(shopping_cart)
     db.session.commit()
 
-    # Return new_shoppingcart as json
-    return newshoppingcart.product_schema.jsonify(newshoppingcart)
+    # Return new_book as json
+    return shopping_cart.product_schema.jsonify(shopping_cart)
+
+    # Fetch the POST request's fields
+    # newshoppingcart = ShoppingCart(userName, ISBN)
+    #
+    # duplicate = db.session.query(exists().where(newshoppingcart.User == )).scalar()
+    #
+    # if duplicate:
+    #     return jsonify("Shopping cart is already in the database")
+    #
+    #
+    # # Only add shopping cart if it's unique
+    # db.session.add(newshoppingcart)
+    # db.session.commit()
+    #
+    # # Return new_shoppingcart as json
+    # return newshoppingcart.product_schema.jsonify(newshoppingcart)
 
 
 
-# @app.route("/admin/ShoppingCart/<book>", methods=["PUT"])
-# def addBookToShoppingCart(book):
+@app.route("/admin/ShoppingCart/<book>/<userName>", methods=["PUT"])
+def addBookToShoppingCart(book, userName):
+    shopping_cart = ShoppingCart.query.get(userName)
 
-# @app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["DELETE"])
-# def deleteBookFromShoppingCart(userName, ISBN):
 
-@app.route("/admin/ShoppingCart/<userName>", methods=["GET"])
-def getListFromShoppingCart(userName):
-    all_books = ShoppingCart.query.get(userName)
 
-    if all_books is None:
+@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["DELETE"])
+def deleteBookFromShoppingCart(userName, ISBN):
+    shopping_cart = ShoppingCart.query.get(userName)
+
+    if shopping_cart is None:
         return jsonify(None)
 
-    return ShoppingCart.product_schema.jsonify(all_books)
+
+@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["GET"])
+def getListFromShoppingCart(userName, ISBN):
+    shopping_cart = ShoppingCart.query.get(userName)
+    # all_books = shopping_cart.Books
+
+    if shopping_cart is None:
+        return jsonify(None)
+
+    bookDetails = getBookByISBN(ISBN)
+
+    return Book.product_schema.jsonify(bookDetails)
 
 
 
