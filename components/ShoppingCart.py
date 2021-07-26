@@ -1,6 +1,7 @@
 from __main__ import db, ma
 from components.BookDetails import Book
 
+
 class ShoppingCart(db.Model):
     # Schema
     class ProductSchema(ma.Schema):
@@ -20,7 +21,7 @@ class ShoppingCart(db.Model):
     def __init__(self, User, Books):
         self.User = User
         self.Books = Books
-    
+
     def addBookToShoppingCart(self, ISBN):
         self.Books = self.Books + ISBN
         return "Book " + Book.query.get(int(ISBN)).Name + " has been added"
@@ -35,4 +36,3 @@ class ShoppingCart(db.Model):
         else:
             self.Books = newListAfterDeletion
             return "Book " + Book.query.get(int(ISBN)).Name + " has been deleted"
-
