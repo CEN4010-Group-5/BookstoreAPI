@@ -11,6 +11,7 @@ class Wishlist(db.Model):
     # Create DB fields
     Title = db.Column(db.String(300), primary_key=True)
     Books = db.Column(db.String(300))
+
     # Product schema for single and multiple items
     product_schema = ProductSchema()
     products_schema = ProductSchema(many=True)
