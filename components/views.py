@@ -272,7 +272,7 @@ def getBooksByTopSellers():
     return jsonify(results)
 
 
-# ******* Relies on rating system to be implemented *****
+# ******************** [4] Rating and commenting ************************
 @app.route("/books/rating/<RATING>", methods=["GET"])
 def getBooksByRating(RATING):
     """Handles getting books by a rating or higher from the database"""
