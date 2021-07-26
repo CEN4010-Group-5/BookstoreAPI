@@ -18,4 +18,3 @@ class Wishlist(db.Model):
     def __init__(self, Title, Books):
         self.Title = Title
         self.Books = Books
-
