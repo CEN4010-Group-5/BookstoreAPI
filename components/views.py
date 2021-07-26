@@ -299,10 +299,11 @@ def getBooksByLimit(LIMIT):
 # ******************** [1] Book Browsing & Sorting *******************
 
 # ******************** [4] Wishlist ************************
-@app.route("/wishList/createWishList", methods=["POST"])
+app.route("/wishList/createWishList", methods=["POST"])
 def addWishlist():
     # Fetch the POST request's fields
     Title = request.json["Title"]
+    Books = request.json["Books"]
 
     # Check if the wishlist title already exists
     duplicate = db.session.query(exists().where(Wishlist.Title == Title)).scalar()
@@ -310,35 +311,20 @@ def addWishlist():
     if duplicate:
         return jsonify("Wishlist tile already in use.")
 
-    new_Wish = Wishlist(Title)
+    new_Wish = Wishlist(Title, Books)
 
     db.session.add(new_Wish)
     db.session.commit()
 
     return new_Wish.product_schema.jsonify(new_Wish)
 
-
-@app.route("/wishList/<title>/wishbooks", methods=["POST"])
-def addWishBook(title):
-    """Handles adding a book to the wishlist."""
-    # Fetch the POST request's fields
-    someList = Wishlist.query.filter_by(Title=title).first()
-
-    if someList is None:
-        return jsonify(None)
-
-    Books = request.json["Books"]
-
-    # Create new book with fetched fields
-    new_wishbook = Books
-    new_wishbook.ownerId = someList.id
-    # Only add book if it's unique
-    db.session.add(new_wishbook)
+@app.route("/wishList/<title>/<ISBN>", methods=["POST"])
+def addWishBook(title, ISBN):
+    some_List = Wishlist.query.get(title)
+    out = some_List.addBookToWish(ISBN)
     db.session.commit()
 
-    # Return new_book as json
-    return new_wishbook.product_schema.jsonify(new_wishbook)
-
+    return jsonify(out)
 
 @app.route("/wishList/<title>", methods=["GET"])
 def getBookInList(title):
@@ -350,38 +336,22 @@ def getBookInList(title):
 
     return Wishlist.product_schema.jsonify(wish)
 
+@app.route("/wishList/<title>/<ISBN>", methods=["DELETE"])
+def removeBookInList(title, ISBN):
+    
+   some_List = Wishlist.query.get(title)
+   out = some_List.removeBookInList(ISBN)
+   db.session.commit() 
 
-@app.route("/wishList/<title>", methods=["DELETE"])
-def removeBookInList(title):
-
-    list = Wishlist.query.filter_by(Title=title).first()
-    Books = request.json["Books"]
-
-    list.Books = Books
-    db.session.delete(Books)
+   return jsonify(out)
+    
+    
+    
+@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["PUT"])
+def addBookToShoppingCart(userName, ISBN):
+    shopping_cart = ShoppingCart.query.get(userName)
+    out = shopping_cart.addBookToShoppingCart(ISBN)
     db.session.commit()
 
-    return list.product_schema.jsonify(list)
-
-
-@app.route("/wishList/<title>/ShoppingCart", methods=("PUT"))
-def addWishToShopping(title):
-    aList = Wishlist.query.filter_by(Title=title).first()
-
-    if aList is None:
-        return jsonify(None)
-
-    Books = request.json["Books"]
-
-    # Create new book with fetched fields
-    new_shopbook = Books
-    new_shopbook.ownerId = aList.id
-    # Only add book if it's unique
-    db.session.add(new_shopbook)
-    db.session.commit()
-
-    # Return new_book as json
-    return new_shopbook.product_schema.jsonify(new_shopbook)
-
-
+    return jsonify(out)
 # ******************** [4] Wishlist ************************
