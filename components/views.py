@@ -270,7 +270,6 @@ def getBooksByTopSellers():
     return jsonify(results)
 
 
-# ******* Relies on rating system to be implemented *****
 @app.route("/books/rating/<RATING>", methods=["GET"])
 def getBooksByRating(RATING):
     """Handles getting books by a rating or higher from the database"""
@@ -344,15 +343,6 @@ def removeBookInList(title, ISBN):
 
     some_List = Wishlist.query.get(title)
     out = some_List.removeBookInList(ISBN)
-    db.session.commit()
-
-    return jsonify(out)
-
-
-@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["PUT"])
-def addBookToShoppingCart(userName, ISBN):
-    shopping_cart = ShoppingCart.query.get(userName)
-    out = shopping_cart.addBookToShoppingCart(ISBN)
     db.session.commit()
 
     return jsonify(out)
