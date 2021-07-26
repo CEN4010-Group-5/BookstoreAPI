@@ -304,6 +304,7 @@ def getBooksByLimit(LIMIT):
 
 # *********************[6] Shopping Cart *******************
 
+
 @app.route("/admin/ShoppingCart", methods=["POST"])
 def createShoppingCart():
     """Handles adding a shopping cart to the database"""
@@ -333,6 +334,7 @@ def addBookToShoppingCart(userName, ISBN):
     db.session.commit()
 
     return jsonify(result)
+
 
 @app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["DELETE"])
 def deleteBookFromShoppingCart(userName, ISBN):
