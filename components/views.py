@@ -303,7 +303,7 @@ def getBooksByLimit(LIMIT):
 def addWishlist():
     # Fetch the POST request's fields
     Title = request.json["Title"]
-    
+
     # Check if the wishlist title already exists
     duplicate = db.session.query(exists().where(Wishlist.Title == Title)).scalar()
 
