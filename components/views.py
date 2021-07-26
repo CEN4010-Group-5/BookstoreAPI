@@ -318,6 +318,7 @@ def addWishlist():
 
     return new_Wish.product_schema.jsonify(new_Wish)
 
+
 @app.route("/wishList/<title>/<ISBN>", methods=["POST"])
 def addWishBook(title, ISBN):
     some_List = Wishlist.query.get(title)
@@ -325,6 +326,7 @@ def addWishBook(title, ISBN):
     db.session.commit()
 
     return jsonify(out)
+
 
 @app.route("/wishList/<title>", methods=["GET"])
 def getBookInList(title):
@@ -336,17 +338,17 @@ def getBookInList(title):
 
     return Wishlist.product_schema.jsonify(wish)
 
+
 @app.route("/wishList/<title>/<ISBN>", methods=["DELETE"])
 def removeBookInList(title, ISBN):
-    
-   some_List = Wishlist.query.get(title)
-   out = some_List.removeBookInList(ISBN)
-   db.session.commit() 
 
-   return jsonify(out)
-    
-    
-    
+    some_List = Wishlist.query.get(title)
+    out = some_List.removeBookInList(ISBN)
+    db.session.commit()
+
+    return jsonify(out)
+
+
 @app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["PUT"])
 def addBookToShoppingCart(userName, ISBN):
     shopping_cart = ShoppingCart.query.get(userName)
@@ -354,4 +356,6 @@ def addBookToShoppingCart(userName, ISBN):
     db.session.commit()
 
     return jsonify(out)
+
+
 # ******************** [4] Wishlist ************************
