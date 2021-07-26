@@ -1,7 +1,14 @@
+import datetime
+import re
+from sqlalchemy import func
 from flask import Flask, request, jsonify
 from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
+from components.Wishlist import Wishlist
+from components.Profile import Profile
+from components.Profile import CreditCards
+from components.Rate import Rate
 from __main__ import db, app
 
 """
@@ -26,6 +33,7 @@ def addBook():
     Pub = request.json["Publisher"]
     Year = request.json["YearPublished"]
     Sold = request.json["Sold"]
+    Rate = request.json["Rate"]
 
     # Check if the book exists in the DB
     duplicate = db.session.query(exists().where(Book.Name == Name)).scalar()
@@ -34,7 +42,9 @@ def addBook():
         return jsonify("Book name is already in the database")
 
     # Create new book with fetched fields
-    new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
+    new_book = Book(
+        Name, Description, Price, Author, Genre, Pub, Year, Sold, Rate
+    )  # noqa
 
     # Only add book if it's unique
     db.session.add(new_book)
@@ -77,7 +87,7 @@ def createAuthor():
     Biography = request.json["Biography"]
     Publisher = request.json["Publisher"]
 
-    # Check if the book exists in the DB
+    # Check if the author exists in the DB
     dupFName = db.session.query(exists().where(Author.FirstName == FName)).scalar()
     dupLName = db.session.query(exists().where(Author.LastName == LName)).scalar()
 
@@ -113,7 +123,11 @@ def getBooksByAuthor(AUTHOR):
     all_books = Book.query.all()
 
     # Append the book's name if its author was specified on the URL
-    byAuthor = [book.Name for book in all_books if book.Author == AUTHOR]
+    byAuthor = [
+        book.Name
+        for book in all_books
+        if book.Author.replace(" ", "") == AUTHOR  # noqa:
+    ]
 
     # Check that the author has books in the database. If no books are found
     # by the author, return a json message saying so, and suggest authors.
@@ -130,78 +144,260 @@ def getBooksByAuthor(AUTHOR):
 
 
 # ******************** [4] Book Details ********************
-# Create a Product
 
-@app.route('/rating/<book>',methods=['POST'])
-def add_rating(book):
-    book = request.json['book']
-    name = request.json['name']
-    rate = request.json['rate']
+# ******************** [2] Profile Management ********************
+@app.route("/profile/createUser", methods=["POST"])
+def addUser():
+    """Handles creating a user profile in the databse"""
+
+    # pattern used from username(email) input
+    regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
+
+    # Fetch the POST request's fields
+    UserName = request.json["UserName"]
+    Password = request.json["Password"]
+    Name = request.json["Name"]
+    HomeAddress = request.json["HomeAddress"]
+
+    # check if username is valid
+    if (re.search(regex, UserName)) == None:
+        return jsonify("Invalid username")
+
+    # Check if the username already exists in the DB
+    duplicate = db.session.query(exists().where(Profile.UserName == UserName)).scalar()
+
+    if duplicate:
+        return jsonify("Username already in use")
+
+    # Create new user with fetched fields
+    new_user = Profile(UserName, Password, Name, HomeAddress)
+
+    # Only add user if it's unique
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Return new_user as json
+    return new_user.product_schema.jsonify(new_user)
+
+
+@app.route("/profile/<userName>", methods=["GET"])
+def getUserByUsername(userName):
+    """Returns the searched user requested using the username"""
+    user = Profile.query.filter_by(UserName=userName).first()
+
+    # check if user exists
+    if user is None:
+        return jsonify(None)
+
+    return Profile.product_schema.jsonify(user)
+
+
+@app.route("/profile/<userName>", methods=["PUT"])
+def updateUser(userName):
+    user = Profile.query.filter_by(UserName=userName).first()
+
+    # check if user exists
+    if user is None:
+        return jsonify(None)
+
+    # Fetch the PUT request's fields
+    Password = request.json["Password"]
+    Name = request.json["Name"]
+    HomeAddress = request.json["HomeAddress"]
+
+    user.Password = Password
+    user.Name = Name
+    user.HomeAddress = HomeAddress
+
+    db.session.commit()
+
+    # Update user fields
+    return user.product_schema.jsonify(user)
+
+
+@app.route("/profile/<userName>/creditcards", methods=["POST"])
+def addCards(userName):
+    someOwner = Profile.query.filter_by(UserName=userName).first()
+
+    # check if user exists
+    if someOwner is None:
+        return jsonify(None)
+
+    cardNumber = request.json["cardNumber"]
+    expirationDate = request.json["expirationDate"]
+    cvs = request.json["cvs"]
+
+    duplicate = db.session.query(
+        exists().where(CreditCards.cardNumber == cardNumber)
+    ).scalar()
+
+    # check to see if card already in database
+    if duplicate:
+        return jsonify("card already in use")
+
+    newCard = CreditCards(cardNumber, expirationDate, cvs)
+    newCard.ownerId = someOwner.id
+
+    db.session.add(newCard)
+    db.session.commit()
+
+    return newCard.product_schema.jsonify(newCard)
+
+
+# ******************** [2] Profile Management ********************
+
+
+# ******************** [1] Book Browsing & Sorting *******************
+@app.route("/books/genre/<GENRE>", methods=["GET"])
+def getBooksByGenre(GENRE):
+    """Handles getting books by genre from the database"""
+
+    # Get books by genre from db
+    books = Book.query.filter(Book.Genre == GENRE)
+
+    # Return books by genre as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
+
+
+@app.route("/books/topSellers", methods=["GET"])
+def getBooksByTopSellers():
+    """Handles getting books by top sellers from the database"""
+
+    # Get books by top sellers from db
+    books = Book.query.order_by(Book.Sold.desc()).limit(10)
+
+    # Return books by top sellers as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
+
+
+# ******* Relies on rating system to be implemented *****
+@app.route("/books/rating/<RATING>", methods=["GET"])
+def getBooksByRating(RATING):
+    """Handles getting books by a rating or higher from the database"""
+
+    # Get books by a specific rating or higher from db
+    books = Book.query.filter(Book.Rating >= RATING)
+
+    # Return books by a specific rating or higher as json
+    results = Book.products_schema.dump(books)
+    return jsonify(results)
+
+
+@app.route("/books/rate", methods=['POST'])
+def createBookRating():
+    book_isbn = request.json["isbn"]
+    rating = request.json['rating']
     comment = request.json['comment']
-
-    new_rating = Rating(book, name, rate, comment)
-
+    username = request.json['username']
+    user = Profile.query.filter_by(UserName=username).first()
+    if user is None:
+        return jsonify(None)
+    curr_time = datetime.datetime.now()
+    new_rating = Rate(book_isbn, username, rating, comment, curr_time)
     db.session.add(new_rating)
-    db.session.comit()
-
+    db.session.commit()
     return new_rating.product_schema.jsonify(new_rating)
 
-# Get All product
-@app.route('/product/',methods=['GET'])
-def  get_product():
-    all_product = Product.query.all()
-    result = products_schema.dump(all_products)
-    return jsonify(result.data)
+@app.route("/books/topRating", methods=["GET"])
+def getBooksTopRating():
+    """Returns a json with X books where X is an int in the database"""
 
-# write a rate to Product
-@app.route('/product/<rate>',methods=['PUT'])
-def rate_product(rate):
+    # Query
+    top_rating_books = Rate.query.order_by(Rate.rating.desc())
 
+    result = Rate.products_schema.dump(top_rating_books)
 
-    id = request.json['id']
-    name = request.json['name']
-    description = request.json['description']
-    price = request.json['price']
-    qty = request.json['qty']
-
-    product.id = id
-    product.name = name
-    product.description = description
-    product.price =price
-    product.qty =qty
-
-    product = Product.query.get(rate)
-
-    db.session.comit()
-
-    return product_schema.jsonify(product)
-
-# write a rate to Product
-
-@app.route('/product/<rate>',methods=['PUT'])
-def rate_product(rate):
+    # Returns X books in the DB as json
+    return jsonify(result)
 
 
-    id = request.json['id']
-    name = request.json['name']
-    description = request.json['description']
-    price = request.json['price']
-    qty = request.json['qty']
+@app.route("/book/averageRating/<ISBN>", methods=["GET"])
+def getAverageRating(ISBN):
+    """Returns a json with X books where X is an int in the database"""
+
+    # Query
+    avg_rating_books = db.session.query(Rate, func.avg(Rate.rating)).filter_by(isbn=ISBN).first()
+    Rate.rating = avg_rating_books[1]
+    db.session.commit()
+    # Rate.rating = avg_rating_books
+    result = Rate.products_schema.dump(avg_rating_books)
+
+    # Returns X books in the DB as json
+    return jsonify(result)
 
 
+@app.route("/books/limit/<LIMIT>", methods=["GET"])
+def getBooksByLimit(LIMIT):
+    """Returns a json with X books where X is an int in the database"""
 
-    product.id = id
-    product.name = name
-    product.description = description
-    product.price =price
-    product.qty =qty
-    product = Product.query.get(rate)
+    # Query
+    all_books = Book.query.order_by(Book.Name.asc()).limit(LIMIT)
 
-    db.session.comit()
+    result = Book.products_schema.dump(all_books)
 
-    return product_schema.jsonify(product)
+    # Returns X books in the DB as json
+    return jsonify(result)
 
-@app.route('/product/<id>',menthods =['DELETE'])
-def delete_product(id):
-    product = Product.query.get(id)
-    return product_schema.jsonify(product)
+
+# ******************** [1] Book Browsing & Sorting *******************
+
+# ******************** [4] Wishlist ************************
+@app.route("/wishList/createWishList", methods=["POST"])
+def addWishlist():
+    # Fetch the POST request's fields
+    Title = request.json["Title"]
+    Books = request.json["Books"]
+
+    # Check if the wishlist title already exists
+    duplicate = db.session.query(exists().where(Wishlist.Title == Title)).scalar()
+
+    if duplicate:
+        return jsonify("Wishlist tile already in use.")
+
+    new_Wish = Wishlist(Title, Books)
+
+    db.session.add(new_Wish)
+    db.session.commit()
+
+    return new_Wish.product_schema.jsonify(new_Wish)
+
+
+# @app.route("/wishList/<title>", methods=["POST"])
+# def addBook(title):
+# """Handles adding a book to the wishlist."""
+# # Fetch the POST request's fields
+# Name = request.json["Name"]
+# Description = request.json["Description"]
+# Price = request.json["Price"]
+# Author = request.json["Author"]
+# Genre = request.json["Genre"]
+# Pub = request.json["Publisher"]
+# Year = request.json["YearPublished"]
+# Sold = request.json["Sold"]
+
+# someList = Wishlist.query.filter_by(Title=title).first()
+
+# # Create new book with fetched fields
+# new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
+# new_book.ownerId = someList.id
+# # Only add book if it's unique
+# db.session.add(new_book)
+# db.session.commit()
+
+# # Return new_book as json
+# return new_book.product_schema.jsonify(new_book)
+
+
+@app.route("/wishList/<title>", methods=["GET"])
+def getBookInList(title):
+    """Returns the books requested from a wishlist."""
+    wish = Wishlist.query.filter_by(Title=title).first()
+
+    if wish is None:
+        return jsonify(None)
+
+    return Wishlist.product_schema.jsonify(wish)
+
+# ******************** [4] Wishlist ************************
