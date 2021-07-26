@@ -270,7 +270,6 @@ def getBooksByTopSellers():
     return jsonify(results)
 
 
-# ******* Relies on rating system to be implemented *****
 @app.route("/books/rating/<RATING>", methods=["GET"])
 def getBooksByRating(RATING):
     """Handles getting books by a rating or higher from the database"""
@@ -319,30 +318,13 @@ def addWishlist():
     return new_Wish.product_schema.jsonify(new_Wish)
 
 
-# @app.route("/wishList/<title>", methods=["POST"])
-# def addBook(title):
-# """Handles adding a book to the wishlist."""
-# # Fetch the POST request's fields
-# Name = request.json["Name"]
-# Description = request.json["Description"]
-# Price = request.json["Price"]
-# Author = request.json["Author"]
-# Genre = request.json["Genre"]
-# Pub = request.json["Publisher"]
-# Year = request.json["YearPublished"]
-# Sold = request.json["Sold"]
+@app.route("/wishList/<title>/<ISBN>", methods=["POST"])
+def addWishBook(title, ISBN):
+    some_List = Wishlist.query.get(title)
+    out = some_List.addBookToWish(ISBN)
+    db.session.commit()
 
-# someList = Wishlist.query.filter_by(Title=title).first()
-
-# # Create new book with fetched fields
-# new_book = Book(Name, Description, Price, Author, Genre, Pub, Year, Sold)
-# new_book.ownerId = someList.id
-# # Only add book if it's unique
-# db.session.add(new_book)
-# db.session.commit()
-
-# # Return new_book as json
-# return new_book.product_schema.jsonify(new_book)
+    return jsonify(out)
 
 
 @app.route("/wishList/<title>", methods=["GET"])
@@ -354,6 +336,16 @@ def getBookInList(title):
         return jsonify(None)
 
     return Wishlist.product_schema.jsonify(wish)
+
+
+@app.route("/wishList/<title>/<ISBN>", methods=["DELETE"])
+def removeBookInList(title, ISBN):
+
+    some_List = Wishlist.query.get(title)
+    out = some_List.removeBookInList(ISBN)
+    db.session.commit()
+
+    return jsonify(out)
 
 
 # ******************** [4] Wishlist ************************
