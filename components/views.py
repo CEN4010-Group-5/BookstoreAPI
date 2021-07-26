@@ -299,7 +299,7 @@ def getBooksByLimit(LIMIT):
 # ******************** [1] Book Browsing & Sorting *******************
 
 # ******************** [4] Wishlist ************************
-app.route("/wishList/createWishList", methods=["POST"])
+@app.route("/wishList/createWishList", methods=["POST"])
 def addWishlist():
     # Fetch the POST request's fields
     Title = request.json["Title"]
