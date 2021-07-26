@@ -4,6 +4,7 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
+from components.Wishlist import WishBooks
 from components.Profile import Profile
 from components.Profile import CreditCards
 from __main__ import db, app
@@ -302,15 +303,14 @@ def getBooksByLimit(LIMIT):
 def addWishlist():
     # Fetch the POST request's fields
     Title = request.json["Title"]
-    Books = request.json["Books"]
-
+    
     # Check if the wishlist title already exists
     duplicate = db.session.query(exists().where(Wishlist.Title == Title)).scalar()
 
     if duplicate:
         return jsonify("Wishlist tile already in use.")
 
-    new_Wish = Wishlist(Title, Books)
+    new_Wish = Wishlist(Title)
 
     db.session.add(new_Wish)
     db.session.commit()
