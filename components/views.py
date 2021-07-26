@@ -4,7 +4,6 @@ from sqlalchemy import exists
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
-from components.Wishlist import WishBooks
 from components.Profile import Profile
 from components.Profile import CreditCards
 from components.ShoppingCart import ShoppingCart
