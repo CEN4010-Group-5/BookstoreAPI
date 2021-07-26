@@ -6,6 +6,7 @@ from components.Author import Author
 from components.Wishlist import Wishlist
 from components.Profile import Profile
 from components.Profile import CreditCards
+from components.ShoppingCart import ShoppingCart
 from __main__ import db, app
 
 """
@@ -356,3 +357,61 @@ def getBookInList(title):
 
 
 # ******************** [4] Wishlist ************************
+
+# *********************[6] Shopping Cart *******************
+@app.route("/admin/ShoppingCart", methods=["POST"])
+def createShoppingCart():
+    """Handles adding a shopping cart to the database"""
+    User = request.json["User"]
+    Books = request.json["Books"]
+
+    duplicate = db.session.query(exists().where(ShoppingCart.User == User)).scalar()
+
+    if duplicate:
+        return jsonify("Shopping Cart is already in the database.")
+
+        # Create new book with fetched fields
+    shopping_cart = ShoppingCart(User, Books)
+
+    # Only add book if it's unique
+    db.session.add(shopping_cart)
+    db.session.commit()
+
+    # Return new_book as json
+    return shopping_cart.product_schema.jsonify(shopping_cart)
+
+
+@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["PUT"])
+def addBookToShoppingCart(userName, ISBN):
+    shopping_cart = ShoppingCart.query.get(userName)
+    result = shopping_cart.addBookToShoppingCart(ISBN)
+    db.session.commit()
+
+    return jsonify(result)
+
+
+@app.route("/admin/ShoppingCart/<userName>/<ISBN>", methods=["DELETE"])
+def deleteBookFromShoppingCart(userName, ISBN):
+    shopping_cart = ShoppingCart.query.get(userName)
+    result = shopping_cart.deleteBookFromShoppingCart(ISBN)
+    db.session.commit()
+
+    return jsonify(result)
+
+
+@app.route("/admin/ShoppingCart/<userName>", methods=["GET"])
+def getListFromShoppingCart(userName):
+    shopping_cart = ShoppingCart.query.get(userName)
+    books = shopping_cart.Books
+    result = ""
+
+    for ISBN in books:
+        book = Book.query.get(int(ISBN))
+        result = result + book.Name + ", "
+
+    return jsonify("Books currently in shopping cart: " + result)
+
+    db.session.commit()
+
+
+# *********************[6] Shopping Cart *******************
