@@ -1,6 +1,7 @@
 from __main__ import db, ma, app
 from components.BookDetails import Book
 
+
 class Wishlist(db.Model):
     # Schema
     class ProductSchema(ma.Schema):
@@ -21,7 +22,7 @@ class Wishlist(db.Model):
     def addBookToWish(self, ISBN):
         self.Books = self.Books + ISBN
         return "Book " + Book.query.get(int(ISBN)).Name + " has been added"
-    
+
     def addWishBookToShoppingCart(self, ISBN):
         self.Books = self.Books + ISBN
         return Book.query.get(int(ISBN)).Name + "was added"
@@ -36,5 +37,3 @@ class Wishlist(db.Model):
         else:
             self.Books = newList
             return Book.query.get(int(ISBN)).Name + " has been deleted"
-
-        
