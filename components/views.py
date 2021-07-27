@@ -183,15 +183,3 @@ def getAverageRating(ISBN):
     # Returns X books in the DB as json
     return jsonify({"rating": avg_rating_books[0]})
 
-
-@app.route("/books/limit/<LIMIT>", methods=["GET"])
-def getBooksByLimit(LIMIT):
-    """Returns a json with X books where X is an int in the database"""
-
-    # Query
-    all_books = Book.query.order_by(Book.Name.asc()).limit(LIMIT)
-
-    result = Book.products_schema.dump(all_books)
-
-    # Returns X books in the DB as json
-    return jsonify(result)
