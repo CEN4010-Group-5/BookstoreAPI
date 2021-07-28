@@ -8,7 +8,9 @@ from components.Wishlist import Wishlist
 from components.Profile import Profile
 from components.Profile import CreditCards
 from components.ShoppingCart import ShoppingCart
+from components.Rate import Rate
 from __main__ import db, app
+
 
 """
 This file will contain all the routes with their functions. Make sure to add a
