@@ -25,6 +25,7 @@ single file, make sure you are naming each function uniquely.
 def addBook():
     """Handles adding a book to the database"""
     # Fetch the POST request's fields
+    ISBN = request.json["ISBN"]
     Name = request.json["Name"]
     Description = request.json["Description"]
     Price = request.json["Price"]
@@ -43,7 +44,7 @@ def addBook():
 
     # Create new book with fetched fields
     new_book = Book(
-        Name, Description, Price, Author, Genre, Pub, Year, Sold, Rating
+        ISBN, Name, Description, Price, Author, Genre, Pub, Year, Sold, Rating
     )  # noqa
 
     # Only add book if it's unique
@@ -122,9 +123,9 @@ def getBooksByAuthor(AUTHOR):
     # Get all books
     all_books = Book.query.all()
 
-    # Append the book's name if its author was specified on the URL
+    # Append the book if its author was specified on the URL
     byAuthor = [
-        book.Name
+        Book.product_schema.dump(book)
         for book in all_books
         if book.Author.replace(" ", "") == AUTHOR  # noqa:
     ]
@@ -452,3 +453,6 @@ def getAverageRating(ISBN):
 
     # Returns X books in the DB as json
     return jsonify({"rating": avg_rating_books[0]})
+
+
+# *********************[7] Rating and comments *******************
