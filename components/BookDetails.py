@@ -16,6 +16,7 @@ class Book(db.Model):
                 "Publisher",
                 "YearPublished",
                 "Sold",
+                "Rating",
             )
 
     # Create DB fields
@@ -28,12 +29,16 @@ class Book(db.Model):
     Publisher = db.Column(db.String(300))
     YearPublished = db.Column(db.Integer)
     Sold = db.Column(db.Integer)
+    Rating = db.Column(db.Integer)
 
     # Product schema for single and multiple items
     product_schema = ProductSchema()
     products_schema = ProductSchema(many=True)
 
-    def __init__(self, Name, Desc, Price, Auth, Genre, Pub, Year, Sold):
+    def __init__(
+        self, ISBN, Name, Desc, Price, Auth, Genre, Pub, Year, Sold, Rating
+    ):  # noqa
+        self.ISBN = ISBN
         self.Name = Name
         self.Description = Desc
         self.Price = Price
@@ -42,3 +47,4 @@ class Book(db.Model):
         self.Publisher = Pub
         self.YearPublished = Year
         self.Sold = Sold
+        self.Rating = Rating
