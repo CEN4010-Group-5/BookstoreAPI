@@ -35,7 +35,9 @@ class Book(db.Model):
     product_schema = ProductSchema()
     products_schema = ProductSchema(many=True)
 
-    def __init__(self, ISBN, Name, Desc, Price, Auth, Genre, Pub, Year, Sold, Rating):  # noqa
+    def __init__(
+        self, ISBN, Name, Desc, Price, Auth, Genre, Pub, Year, Sold, Rating
+    ):  # noqa
         self.ISBN = ISBN
         self.Name = Name
         self.Description = Desc
