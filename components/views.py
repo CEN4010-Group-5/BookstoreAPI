@@ -1,27 +1,7 @@
 import datetime
 import re
-from sqlalchemy import func
 from flask import Flask, request, jsonify
-from sqlalchemy import exists
-from components.BookDetails import Book
-from components.Author import Author
-from components.Wishlist import Wishlist
-from components.Profile import Profile
-from components.Profile import CreditCards
-from components.Rate import Rate
-from __main__ import db, app
-
-"""
-This file will contain all the routes with their functions. Make sure to add a
-separator for your own section.
-
-It is easier to maintain and check for conflicts if all the routes are in a
-single file, make sure you are naming each function uniquely.
-"""
-
-import re
-from flask import Flask, request, jsonify
-from sqlalchemy import exists
+from sqlalchemy import exists, func
 from components.BookDetails import Book
 from components.Author import Author
 from components.Wishlist import Wishlist
