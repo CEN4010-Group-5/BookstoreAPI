@@ -21,8 +21,8 @@ If you are using vscode/pycharm, look up a video on how to use git with those.
 
 ### Create your feature's branch
 
-    git checkout -b FeatureName // Create
-    git checkout FeatureName // Swap to your branch
+    git checkout -b FeatureName # Create
+    git checkout FeatureName # Swap to your branch
 
 ### Install dependencies/requirements
 
@@ -53,9 +53,7 @@ or
 
 # Sending POST and GET requests
 
-Use the script [APIcalls.py](https://github.com/lustered/BookstoreAPI/blob/master/utils/APIcalls.py) in [utils/](https://github.com/lustered/BookstoreAPI/tree/master/utils)
-
-Or alternatively you can use [Postman](https://www.postman.com/) for a more visual approach.
+You can use [Postman](https://www.postman.com/) for a more visual approach.
 You can refer to this [YouTube video](https://www.youtube.com/watch?v=PTZiDnuC86g) for a guide
 
 ## Objectives
