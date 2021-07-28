@@ -429,13 +429,13 @@ def getListFromShoppingCart(userName):
 # *********************[6] Shopping Cart *******************
 
 # *********************[7] Rating and comments *******************
-@app.route("/books/rate", methods=['POST'])
+@app.route("/books/rate", methods=["POST"])
 def createBookRating():
     """Create a rating and comment on a book"""
     book_isbn = request.json["isbn"]
-    rating = request.json['rating']
-    comment = request.json['comment']
-    username = request.json['username']
+    rating = request.json["rating"]
+    comment = request.json["comment"]
+    username = request.json["username"]
     user = Profile.query.filter_by(UserName=username).first()
     if user is None:
         return jsonify(None)
@@ -461,10 +461,12 @@ def getBooksTopRating():
 
 @app.route("/book/<ISBN>/averageRating", methods=["GET"])
 def getAverageRating(ISBN):
-    """Returns a average rating json with book given ISBN """
+    """Returns a average rating json with book given ISBN"""
 
     # Query
-    avg_rating_books = db.session.query(func.avg(Rate.rating)).filter_by(isbn=ISBN).first()
+    avg_rating_books = (
+        db.session.query(func.avg(Rate.rating)).filter_by(isbn=ISBN).first()
+    )
 
     # Returns X books in the DB as json
     return jsonify({"rating": avg_rating_books[0]})
