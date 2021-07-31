@@ -318,7 +318,7 @@ def addWishlist():
     return new_Wish.product_schema.jsonify(new_Wish)
 
 
-@app.route("/wishList/<title>/<ISBN>", methods=["POST"])
+@app.route("/wishList/<title>/<ISBN>", methods=["PUT"])
 def addWishBook(title, ISBN):
     some_List = Wishlist.query.get(title)
     out = some_List.addBookToWish(ISBN)
