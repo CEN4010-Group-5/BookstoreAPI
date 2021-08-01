@@ -240,6 +240,21 @@ def addCards(userName):
 
     return newCard.product_schema.jsonify(newCard)
 
+@app.route("/profile/creditcards/<userName>", methods=["GET"])
+def viewCards(userName):
+    someOwner = Profile.query.filter_by(UserName = userName).first()
+    
+    # check if user exists
+    if someOwner is None:
+        return jsonify("user does not exist")
+
+    all_cards = CreditCards.query.filter_by(ownerId = someOwner.id)
+
+    result = CreditCards.products_schema.dump(all_cards)
+
+    # Returns all the DB items as json
+    return jsonify(result)
+
 
 # ******************** [2] Profile Management ********************
 
